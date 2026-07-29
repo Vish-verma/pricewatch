@@ -1,0 +1,26 @@
+{
+  "name": "pricewatch",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Track prices on product pages, get alerted when they drop.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.18.0",
+      "onFail": "download"
+    }
+  },
+  "scripts": {
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f",
+    "db:reset": "docker compose down -v && docker compose up -d"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

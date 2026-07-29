@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: pricewatch-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pricewatch
+      POSTGRES_PASSWORD: localdev
+      POSTGRES_DB: pricewatch
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pricewatch -d pricewatch"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: pricewatch-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: pricewatch
+      RABBITMQ_DEFAULT_PASS: localdev
+    ports:
+      - "5672:5672"     # AMQP — your app connects here
+      - "15672:15672"   # management UI — you browse here
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
