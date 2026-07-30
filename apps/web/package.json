@@ -1,0 +1,13 @@
+{
+  "name": "@pricewatch/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@pricewatch/schemas": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "typescript": "^5.7.0"
+  }
+}
