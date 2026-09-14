@@ -4,13 +4,14 @@ import { db, watches } from "@pricewatch/db";
 import { createWatchSchema } from "@pricewatch/schemas";
 import { revalidatePath } from "next/cache";
 import crypto from "node:crypto";
-
-// TEMP: no auth yet. Every watch is owned by this placeholder user
-// until Better Auth is wired up next session — see the FK note
-// in the Session 3 schema file.
-const DEV_USER_ID = "00000000-0000-0000-0000-000000000000";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export async function createWatchAction(formData: FormData) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) {
+    throw new Error("Not authenticated");
+  }
   const raw = {
     url: formData.get("url"),
     label: formData.get("label"),
@@ -31,7 +32,7 @@ export async function createWatchAction(formData: FormData) {
   const urlHash = crypto.createHash("sha256").update(url).digest("hex");
 
   await db.insert(watches).values({
-    userId: DEV_USER_ID,
+    userId: session.user.id,
     url,
     urlHash,
     label,

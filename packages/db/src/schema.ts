@@ -10,6 +10,7 @@ import {
   index,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import { user } from "./auth-schema";
 
 // ── Enums ────────────────────────────────────────────────
 
@@ -47,8 +48,9 @@ export const watches = pgTable("watches", {
 
   // No .references() yet — see §0. Becomes a real FK once
   // Better Auth's users table exists (Phase 1).
-  userId: text("user_id").notNull(),
-
+  userId: text("user_id")
+    .notNull()
+    .references(() =>   user.id, { onDelete: "cascade" }),
   url: text("url").notNull(),
   urlHash: text("url_hash").notNull().unique(),
   label: varchar("label", { length: 120 }).notNull(),

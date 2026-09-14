@@ -1,10 +1,11 @@
-import { db, watches } from "@pricewatch/db";
-import { desc } from "drizzle-orm";
-import { createWatchAction } from "./actions";
+import { db, watches, desc } from "@pricewatch/db";
+import { createWatchAction } from "../actions";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export default async function DashboardPage() {
   const allWatches = await db.select().from(watches).orderBy(desc(watches.createdAt));
-
+  const session = await auth.api.getSession({ headers: await headers() });
   return (
     <main style={{ padding: "2rem", fontFamily: "sans-serif", maxWidth: 640 }}>
       <h1>PriceWatch</h1>

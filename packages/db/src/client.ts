@@ -1,7 +1,7 @@
 import postgres from "postgres";
 import { drizzle } from "drizzle-orm/postgres-js";
 import * as schema from "./schema";
-
+import * as authSchema from "./auth-schema";
 if (!process.env.DATABASE_URL) {
   throw new Error(
     "DATABASE_URL is not set. Are you running this without --env-file, " +
@@ -26,4 +26,4 @@ if (process.env.NODE_ENV !== "production") {
   globalForDb.queryClient = queryClient;
 }
 
-export const db = drizzle(queryClient, { schema });
+export const db = drizzle(queryClient, { schema: { ...schema, ...authSchema } });

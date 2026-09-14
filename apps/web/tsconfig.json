@@ -8,7 +8,8 @@
     "incremental": true,
     "forceConsistentCasingInFileNames": true,
     "plugins": [{ "name": "next" }],
-    "types": ["node"]
+    "types": ["node"],
+    "paths": { "@/*": ["./src/*"] }
   },
   "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
