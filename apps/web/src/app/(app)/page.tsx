@@ -1,11 +1,15 @@
-import { db, watches, desc } from "@pricewatch/db";
+import { db, watches, desc, eq } from "@pricewatch/db";
 import { createWatchAction } from "../actions";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
-  const allWatches = await db.select().from(watches).orderBy(desc(watches.createdAt));
   const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) {
+  redirect("/login");
+}
+  const allWatches = await db.select().from(watches).where(eq(watches.userId, session.user.id)).orderBy(desc(watches.createdAt));
   return (
     <main style={{ padding: "2rem", fontFamily: "sans-serif", maxWidth: 640 }}>
       <h1>PriceWatch</h1>
