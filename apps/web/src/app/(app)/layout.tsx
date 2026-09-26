@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
+import { Providers } from "@/app/providers";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -27,7 +28,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           <SignOutButton />
         </span>
       </header>
-      {children}
+      <Providers>{children}</Providers>
     </div>
   );
 }
