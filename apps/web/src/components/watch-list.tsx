@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { fetchWatches, watchKeys } from "@/lib/api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteWatch, fetchWatches, watchKeys } from "@/lib/api";
 import type { WatchDTO } from "@/lib/types";
 
 export function WatchList({ initialWatches }: { initialWatches: WatchDTO[] }) {
@@ -11,6 +11,28 @@ export function WatchList({ initialWatches }: { initialWatches: WatchDTO[] }) {
     queryFn: fetchWatches,
     initialData: initialWatches,
     refetchInterval: 10_000, // poll every 10s
+  });
+
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteWatch,
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: watchKeys.all });
+      const previous = queryClient.getQueryData<WatchDTO[]>(watchKeys.all);
+      queryClient.setQueryData<WatchDTO[]>(watchKeys.all, (old = []) =>
+        old.filter((w) => w.id !== id)
+      );
+      return { previous };
+    },
+    onError: (_err, _id, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(watchKeys.all, context.previous);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: watchKeys.all });
+    },
   });
 
   return (
@@ -32,6 +54,11 @@ export function WatchList({ initialWatches }: { initialWatches: WatchDTO[] }) {
               {pending ? w.label : <Link href={`/watches/${w.id}`}>{w.label}</Link>}
               {" — "}target {w.currency} {w.targetPrice} — status: {w.status}
               {pending && " (saving…)"}
+              {!pending && (
+                <button onClick={() => deleteMutation.mutate(w.id)} style={{ marginLeft: "0.5rem" }}>
+                  Delete
+                </button>
+              )}
             </li>
           );
         })}

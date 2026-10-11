@@ -8,6 +8,7 @@ import {
   boolean,
   timestamp,
   index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { user } from "./auth-schema";
@@ -50,9 +51,9 @@ export const watches = pgTable("watches", {
   // Better Auth's users table exists (Phase 1).
   userId: text("user_id")
     .notNull()
-    .references(() =>   user.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
   url: text("url").notNull(),
-  urlHash: text("url_hash").notNull().unique(),
+  urlHash: text("url_hash").notNull(),
   label: varchar("label", { length: 120 }).notNull(),
 
   targetPrice: numeric("target_price", {
@@ -69,7 +70,10 @@ export const watches = pgTable("watches", {
 
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-});
+},
+  (table) => [
+    uniqueIndex("watches_user_url_idx").on(table.userId, table.urlHash),
+  ]);
 
 export const watchesRelations = relations(watches, ({ many }) => ({
   pricePoints: many(pricePoints),

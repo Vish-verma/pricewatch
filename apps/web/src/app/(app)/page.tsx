@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { getWatchesForUser } from "@/lib/watches";
 import { WatchList } from "@/components/watch-list";
-
+import { AddWatchForm } from "@/components/add-watch-form";
 export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/login");
@@ -12,7 +12,7 @@ export default async function DashboardPage() {
 
   return (
     <main style={{ padding: "2rem", fontFamily: "sans-serif", maxWidth: 720 }}>
-      {/* AddWatchForm goes here in Part G */}
+      <AddWatchForm />
       <WatchList initialWatches={initialWatches} />
     </main>
   );

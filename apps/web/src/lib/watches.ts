@@ -67,6 +67,11 @@ export async function getWatchWithHistory(userId: string, watchId: string) {
   return { watch: toWatchDTO(row), history };
 }
 
+export async function deleteWatchForUser(userId: string, watchId: string) {
+  const result = await db.delete(watches).where(and(eq(watches.id, watchId), eq(watches.userId, userId))).returning({ id: watches.id });;
+  return result.length > 0;
+}
+
 // Postgres error code 23505 = unique constraint violated.
 // Drizzle wraps the driver's error, so check both levels.
 export function isUniqueViolation(err: unknown): boolean {

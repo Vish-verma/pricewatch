@@ -27,3 +27,7 @@ export function createWatch(input: CreateWatchInput): Promise<WatchDTO> {
     body: JSON.stringify(input),
   }).then((r) => handle<WatchDTO>(r));
 }
+
+export function deleteWatch(id: string): Promise<void> {
+  return fetch(`/api/watches/${id}`, { method: "DELETE" }).then((r) => handle<void>(r));
+}
